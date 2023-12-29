@@ -218,7 +218,7 @@ int hostfs_ioctl(struct vinode *f_inode, uint64 request, char *data) {
     sprint("hostfs_write: invalid file handle!\n");
     return -1;
   }
-  panic( "You need to call host's ioctl by frontend_syscall in lab5_3.\n" );
+  return frontend_syscall(HTIFSYS_ioctl, pf->kfd, request, (uint64)data, 0, 0, 0, 0);
 }
 
 int64 hostfs_mmap(struct vinode *f_node, char *addr, uint64 length, int prot,
