@@ -128,8 +128,16 @@ void smode_trap_handler(void) {
         // then store the interrupt processing process pid and the uart value in it
         // and use this structure to update the wake callback context of the process
         // finally call do_wake to wake up the process.
-        panic( "You have to implement CAUSE_MEXTERNEL_S_TRAP to get data from UART and wake the process 0 in lab5_2.\n" );
+        volatile uint32 *rx = (void*)(uintptr_t)0x60000000;
+        uint32 data = *rx;
 
+        uint64 handle_intr_pid = 0;  // the pid of the process that will handle this interrupt
+        struct update_uartvalue_ctx *ctx = (struct update_uartvalue_ctx *)alloc_page();
+        ctx->uartvalue = (char)data;
+        ctx->pid = handle_intr_pid;
+        set_wake_callback(handle_intr_pid, NULL, ctx);  // add wake callback context
+
+        do_wake(handle_intr_pid);
         break;
       }
     case CAUSE_STORE_PAGE_FAULT:
