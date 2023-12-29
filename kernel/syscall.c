@@ -104,7 +104,9 @@ ssize_t sys_user_yield() {
   // hint: the functionality of yield is to give up the processor. therefore,
   // we should set the status of currently running process to READY, insert it in
   // the rear of ready queue, and finally, schedule a READY process to run.
-  panic( "You need to implement the yield syscall in lab3_2.\n" );
+  current->status = READY;
+  insert_to_ready_queue(current);
+  schedule();
 
   return 0;
 }
@@ -260,7 +262,10 @@ ssize_t sys_user_uart_getchar() {
   // therefore, we should call do_sleep to let process 0 sleep. 
   // Note that the do_sleep function will never return, and the function passed to do_sleep
   // will be called in do_wake.
-  panic( "You have to implement sys_user_uart_getchar to get data from UART using uartgetchar in lab5_1 and modify it in lab5_2.\n" );
+  volatile uint32 *status = (void*)(uintptr_t)0x60000008;
+volatile uint32 *rx = (void*)(uintptr_t)0x60000000;
+while (!(*status & 0x00000001));
+return *rx;
 }
 
 // used for car control. added @lab5_1
